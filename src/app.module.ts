@@ -11,6 +11,7 @@ import { LogModule } from './log/log.module';
 import { Log } from './log/log.entity';
 import { EventModule } from './event/event.module';
 import { Event } from './event/event.entity';
+import { session } from 'telegraf';
 
 @Module({
   imports: [
@@ -26,13 +27,6 @@ import { Event } from './event/event.entity';
       database: 'expenses_telegram_bot',
       entities: [User, Log, Event],
       synchronize: true,
-    }),
-    TelegrafModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        token: configService.get('TELEGRAM_BOT_TOKEN'),
-      }),
-      inject: [ConfigService],
     }),
     UsersModule,
     WebhookModule,

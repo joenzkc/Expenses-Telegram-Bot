@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectBot, Start, Update } from 'nestjs-telegraf';
+import { Hears, InjectBot, Start, Update } from 'nestjs-telegraf';
 import { EventService } from 'src/event/event.service';
 import { CreateLogDto } from 'src/log/dto/create-log.dto';
 import { LogService } from 'src/log/log.service';
 import { CreateUserDto } from 'src/users/dto/create-user-dto';
 import { UsersService } from 'src/users/users.service';
-import { Context, Telegraf, Markup } from 'telegraf';
+import { Context, Telegraf, Markup, Scenes } from 'telegraf';
 
 @Injectable()
 @Update()
@@ -48,5 +48,10 @@ export class WebhookService {
         .oneTime()
         .resize(),
     );
+  }
+
+  @Hears('Create a new event ✈')
+  async createEvent(ctx: Scenes.SceneContext) {
+    ctx.scene.enter('create-event');
   }
 }
