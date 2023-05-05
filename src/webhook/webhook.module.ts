@@ -5,10 +5,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
 import { UsersModule } from 'src/users/users.module';
 import { TelegrafModule } from 'nestjs-telegraf';
+import { LogModule } from 'src/log/log.module';
+import { EventModule } from 'src/event/event.module';
 
 @Module({
-  imports: [ConfigModule, TelegrafModule, UsersModule],
+  imports: [ConfigModule, TelegrafModule, UsersModule, LogModule, EventModule],
   controllers: [WebhookController],
-  providers: [WebhookService]
+  providers: [WebhookService],
 })
 export class WebhookModule {}

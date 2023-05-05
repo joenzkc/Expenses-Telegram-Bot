@@ -7,6 +7,10 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/users.entity';
 import { WebhookModule } from './webhook/webhook.module';
+import { LogModule } from './log/log.module';
+import { Log } from './log/log.entity';
+import { EventModule } from './event/event.module';
+import { Event } from './event/event.entity';
 
 @Module({
   imports: [
@@ -20,18 +24,20 @@ import { WebhookModule } from './webhook/webhook.module';
       username: 'root',
       password: 'admin',
       database: 'expenses_telegram_bot',
-      entities: [User],
+      entities: [User, Log, Event],
       synchronize: true,
     }),
     TelegrafModule.forRootAsync({
-        imports: [ConfigModule],
-        useFactory: async (configService: ConfigService) => ({
-          token: configService.get('TELEGRAM_BOT_TOKEN'),
-        }),
-        inject: [ConfigService], 
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        token: configService.get('TELEGRAM_BOT_TOKEN'),
+      }),
+      inject: [ConfigService],
     }),
     UsersModule,
-    WebhookModule
+    WebhookModule,
+    LogModule,
+    EventModule,
   ],
   controllers: [AppController],
   providers: [AppService],
