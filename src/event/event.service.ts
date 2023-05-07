@@ -31,4 +31,8 @@ export class EventService {
       await queryRunner.release();
     }
   }
+
+  async test() {
+    console.log('test');
+  }
 }

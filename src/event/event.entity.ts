@@ -10,4 +10,7 @@ export class Event {
 
   @Column()
   event_name: string;
+
+  @Column()
+  budget: number;
 }
