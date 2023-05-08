@@ -8,6 +8,7 @@ import { LogModule } from 'src/log/log.module';
 import { EventModule } from 'src/event/event.module';
 import { session } from 'telegraf';
 import { CreateEventWizard } from './wizards/create-event.wizard';
+import { SetActiveEventWizard } from './wizards/set-active-event.wizard';
 
 @Module({
   imports: [
@@ -25,6 +26,6 @@ import { CreateEventWizard } from './wizards/create-event.wizard';
     EventModule,
   ],
   controllers: [WebhookController],
-  providers: [WebhookService, CreateEventWizard],
+  providers: [WebhookService, CreateEventWizard, SetActiveEventWizard],
 })
 export class WebhookModule {}

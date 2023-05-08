@@ -38,6 +38,33 @@ export class UsersService {
   }
 
   /**
+   * Returns the active event id
+   */
+  async getActiveEventId(telegram_id: string) {
+    const user = await this.findUserTelegramId(telegram_id);
+    return user.activeEventId;
+  }
+
+  async setActiveEventId(telegram_id: string, event_id: number) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const user = await queryRunner.manager.findOne(User, {
+        where: { telegram_id },
+      });
+      user.activeEventId = event_id;
+      await queryRunner.manager.save(user);
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  /**
    * Creates a new user profile in the database
    * @param dto User information
    */

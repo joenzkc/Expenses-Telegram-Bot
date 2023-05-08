@@ -27,6 +27,41 @@ export class EventService {
     } catch (err) {
       console.log(err);
       await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async getEvents(telegram_id: string) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const events: Event[] = await queryRunner.manager.find(Event, {
+        where: { telegram_id, is_active: true },
+      });
+      return events;
+    } catch (err) {
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async getEvent(telegram_id: string, event_name: string) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const event: Event = await queryRunner.manager.findOne(Event, {
+        where: { telegram_id, event_name },
+      });
+      return event;
+    } catch (err) {
+      console.log(err);
+      await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
     }

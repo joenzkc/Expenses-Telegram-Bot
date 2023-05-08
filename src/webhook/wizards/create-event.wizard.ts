@@ -9,7 +9,6 @@ export class CreateEventWizard {
   @WizardStep(1)
   step1(@Context() ctx: Scenes.WizardContext) {
     ctx.reply('Enter the name of the event:');
-    this.eventService.test();
     ctx.wizard.next();
   }
 
@@ -17,7 +16,6 @@ export class CreateEventWizard {
   @On('text')
   async step2(@Context() ctx: Scenes.WizardContext) {
     if (ctx.message && 'text' in ctx.message) {
-      console.log(ctx.message.text);
       ctx.wizard.state['event_name'] = ctx.message.text;
     }
     const event_name = ctx.wizard.state['event_name'];
@@ -43,10 +41,17 @@ export class CreateEventWizard {
         event_name: ctx.wizard.state['event_name'],
         budget: budgetRounded,
       };
-
-      console.log(eventDto);
+      try {
+        await this.eventService.createEvent(eventDto);
+        ctx.reply('Your event has been created!');
+      } catch (err) {
+        ctx.reply(
+          'Something went wrong! Did you have a event with the same name?',
+        );
+      }
+      ctx.scene.leave();
+      return;
     }
-    ctx.reply('Your event has been created!');
-    ctx.scene.leave();
+    ctx.reply('Did you reply a message?');
   }
 }

@@ -8,9 +8,12 @@ export class Event {
   @Column()
   telegram_id: string;
 
-  @Column()
+  @Column({ unique: true })
   event_name: string;
 
-  @Column()
+  @Column('decimal', { precision: 10, scale: 2 })
   budget: number;
+
+  @Column({ default: true })
+  is_active: boolean;
 }

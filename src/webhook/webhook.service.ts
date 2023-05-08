@@ -42,16 +42,46 @@ export class WebhookService {
     await ctx.reply(
       `Welcome back ${name}! What would you like to do today?`,
       Markup.keyboard([
-        ['Create a new event ✈', 'Look at my spending history 😒'],
-        ['Look at my events 👀', 'Add a transaction 💵'],
-      ])
-        .oneTime()
-        .resize(),
+        ['View current event 💵', 'Add a transaction 🍟'],
+        ['Set a new active event 🎈', 'Create a new event ✈'],
+        ['Look at my events 👀', 'Look at my spending history 😒'],
+      ]).resize(),
     );
+  }
+
+  @Hears('Set a new active event 🎈')
+  async setActiveEvent(ctx: Scenes.SceneContext) {
+    ctx.scene.enter('set-active-event');
+  }
+
+  @Hears('Add a transaction 🍟')
+  async addTransaction(ctx: Context) {
+    ctx.reply('WIP!');
+  }
+
+  @Hears('Look at my events 👀')
+  async lookAtEvents(ctx: Context) {
+    ctx.reply('WIP!');
+  }
+
+  @Hears('Look at my spending history 😒')
+  async lookAtSpendingHistory(ctx: Context) {
+    ctx.reply('WIP!');
   }
 
   @Hears('Create a new event ✈')
   async createEvent(ctx: Scenes.SceneContext) {
     ctx.scene.enter('create-event');
+  }
+
+  @Hears('View current event 💵')
+  async viewCurrentEvent(ctx: Context) {
+    const telegram_id = ctx.message.from.username;
+    const activeId = await this.usersService.getActiveEventId(telegram_id);
+    if (!activeId) {
+      ctx.reply('No active event!');
+    } else {
+      ctx.reply(`The current active event id is ${activeId}`);
+    }
   }
 }
