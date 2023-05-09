@@ -1,47 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Event } from './event.entity';
+import { Transaction } from './transaction.entity';
 import { DataSource, Repository } from 'typeorm';
-import { CreateEventDto } from './dto/create-event.dto';
+import { CreateTransactionDto } from './dto/create-transaction.dto';
 
 @Injectable()
-export class EventService {
+export class TransactionService {
   constructor(
-    @InjectRepository(Event) private eventRepository: Repository<Event>,
+    @InjectRepository(Transaction)
+    private transactionRepo: Repository<Transaction>,
     private dataSource: DataSource,
   ) {}
 
-  /**
-   * Creates a new event
-   * @param dto
-   */
-  async createEvent(dto: CreateEventDto) {
+  async createTransaction(dto: CreateTransactionDto) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-
     try {
-      const event: Event = await this.eventRepository.create(dto);
-      await queryRunner.manager.save(event);
-      await queryRunner.commitTransaction();
+      const xact: Transaction = this.transactionRepo.create(dto);
+      await queryRunner.manager.save(xact);
     } catch (err) {
       console.log(err);
       await queryRunner.rollbackTransaction();
-      throw err;
     } finally {
       await queryRunner.release();
     }
   }
 
-  async getEvents(telegram_id: string) {
+  async retrieveAllTransactions(telegram_id: string) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const events: Event[] = await queryRunner.manager.find(Event, {
-        where: { telegram_id, is_active: true },
+      const xacts: Transaction[] = await queryRunner.manager.find(Transaction, {
+        where: { telegram_id },
       });
-      return events;
+      return xacts;
     } catch (err) {
       console.log(err);
       await queryRunner.rollbackTransaction();
@@ -50,28 +44,20 @@ export class EventService {
     }
   }
 
-  async getEvent(telegram_id: string, event_name: string) {
+  async retrieveTransactionsEventId(event_id: number) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const event: Event = await queryRunner.manager.findOne(Event, {
-        where: { telegram_id, event_name },
+      const xacts: Transaction[] = await queryRunner.manager.find(Transaction, {
+        where: { event_id },
       });
-      return event;
+      return xacts;
     } catch (err) {
       console.log(err);
       await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
     }
-  }
-
-  async getEventWithId(event_id: number) {
-    return await this.eventRepository.findOne({ where: { id: event_id } });
-  }
-
-  async test() {
-    console.log('test');
   }
 }

@@ -1,8 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-@Unique(['telegram_id', 'event_name'])
-export class Event {
+export class Transaction {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -10,10 +9,16 @@ export class Event {
   telegram_id: string;
 
   @Column()
-  event_name: string;
+  event_id: number;
+
+  @Column()
+  created_at: number;
 
   @Column('decimal', { precision: 10, scale: 2 })
-  budget: number;
+  cost: number;
+
+  @Column()
+  description: string;
 
   @Column({ default: true })
   is_active: boolean;

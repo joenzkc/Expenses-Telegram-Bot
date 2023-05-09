@@ -12,6 +12,8 @@ import { Log } from './log/log.entity';
 import { EventModule } from './event/event.module';
 import { Event } from './event/event.entity';
 import { session } from 'telegraf';
+import { TransactionModule } from './transaction/transaction.module';
+import { Transaction } from './transaction/transaction.entity';
 
 @Module({
   imports: [
@@ -25,13 +27,14 @@ import { session } from 'telegraf';
       username: 'root',
       password: 'admin',
       database: 'expenses_telegram_bot',
-      entities: [User, Log, Event],
+      entities: [User, Log, Event, Transaction],
       synchronize: true,
     }),
     UsersModule,
     WebhookModule,
     LogModule,
     EventModule,
+    TransactionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

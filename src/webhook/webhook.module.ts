@@ -9,6 +9,7 @@ import { EventModule } from 'src/event/event.module';
 import { session } from 'telegraf';
 import { CreateEventWizard } from './wizards/create-event.wizard';
 import { SetActiveEventWizard } from './wizards/set-active-event.wizard';
+import { TransactionModule } from 'src/transaction/transaction.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { SetActiveEventWizard } from './wizards/set-active-event.wizard';
     UsersModule,
     LogModule,
     EventModule,
+    TransactionModule,
   ],
   controllers: [WebhookController],
   providers: [WebhookService, CreateEventWizard, SetActiveEventWizard],

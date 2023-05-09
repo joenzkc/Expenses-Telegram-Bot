@@ -3,6 +3,8 @@ import { Hears, InjectBot, Start, Update } from 'nestjs-telegraf';
 import { EventService } from 'src/event/event.service';
 import { CreateLogDto } from 'src/log/dto/create-log.dto';
 import { LogService } from 'src/log/log.service';
+import { Transaction } from 'src/transaction/transaction.entity';
+import { TransactionService } from 'src/transaction/transaction.service';
 import { CreateUserDto } from 'src/users/dto/create-user-dto';
 import { UsersService } from 'src/users/users.service';
 import { Context, Telegraf, Markup, Scenes } from 'telegraf';
@@ -15,6 +17,7 @@ export class WebhookService {
     private usersService: UsersService,
     private eventsService: EventService,
     private logService: LogService,
+    private transactionService: TransactionService,
   ) {}
 
   @Start()
@@ -81,7 +84,20 @@ export class WebhookService {
     if (!activeId) {
       ctx.reply('No active event!');
     } else {
-      ctx.reply(`The current active event id is ${activeId}`);
+      const event = await this.eventsService.getEventWithId(activeId);
+      let reply = `*Current active event: ${event.event_name}*\n`;
+      reply += `Total budget: \\$${Math.round(event.budget)}\n`;
+      reply += `Remaining: \n`;
+      const transactions: Transaction[] =
+        await this.transactionService.retrieveTransactionsEventId(event.id);
+      reply += `Transaction log: \n`;
+      if (transactions.length == 0) {
+        reply += `No transactions recorded\\!\n`;
+      }
+      for (let i = 0; i < transactions.length; i++) {
+        reply += `${i}: ${transactions[i].description}, \\$${transactions[i].cost} at ${transactions[i].created_at}`;
+      }
+      ctx.replyWithMarkdownV2(reply);
     }
   }
 }
