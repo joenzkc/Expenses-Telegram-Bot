@@ -8,6 +8,7 @@ import { TransactionService } from 'src/transaction/transaction.service';
 import { CreateUserDto } from 'src/users/dto/create-user-dto';
 import { UsersService } from 'src/users/users.service';
 import { Context, Telegraf, Markup, Scenes } from 'telegraf';
+import * as moment from 'moment';
 
 @Injectable()
 @Update()
@@ -58,8 +59,8 @@ export class WebhookService {
   }
 
   @Hears('Add a transaction 🍟')
-  async addTransaction(ctx: Context) {
-    ctx.reply('WIP!');
+  async addTransaction(ctx: Scenes.SceneContext) {
+    ctx.scene.enter('add-transaction');
   }
 
   @Hears('Look at my events 👀')
@@ -85,19 +86,34 @@ export class WebhookService {
       ctx.reply('No active event!');
     } else {
       const event = await this.eventsService.getEventWithId(activeId);
-      let reply = `*Current active event: ${event.event_name}*\n`;
-      reply += `Total budget: \\$${Math.round(event.budget)}\n`;
-      reply += `Remaining: \n`;
+      let reply = `<b>Current active event: ${event.event_name}</b>\n`;
+      reply += `Total budget: $${Math.round(event.budget)}\n`;
       const transactions: Transaction[] =
         await this.transactionService.retrieveTransactionsEventId(event.id);
       reply += `Transaction log: \n`;
       if (transactions.length == 0) {
-        reply += `No transactions recorded\\!\n`;
+        reply += `No transactions recorded!\n`;
       }
+      let totalSpent: number = 0;
       for (let i = 0; i < transactions.length; i++) {
-        reply += `${i}: ${transactions[i].description}, \\$${transactions[i].cost} at ${transactions[i].created_at}`;
+        const date = transactions[i].created_at;
+        // Hours part from the timestamp
+        const time = moment.unix(date).format('DD/MM/YY HH:mm').toString();
+        reply += `${i + 1}: ${transactions[i].description}, $${
+          transactions[i].cost
+        } at ${time}\n`;
+        console.log(`Transaction ${i} cost: ${transactions[i].cost}`);
+        totalSpent += +transactions[i].cost;
       }
-      ctx.replyWithMarkdownV2(reply);
+      console.log(totalSpent);
+      const remaining = event.budget - totalSpent;
+      if (remaining < 0) {
+        reply += `Remaining: You have exceeded your budget 😒\n`;
+      } else {
+        reply += `Remaining: $${remaining}`;
+      }
+
+      ctx.replyWithHTML(reply);
     }
   }
 }
