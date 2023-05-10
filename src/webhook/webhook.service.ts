@@ -48,7 +48,7 @@ export class WebhookService {
       Markup.keyboard([
         ['View current event 💵', 'Add a transaction 🍟'],
         ['Set a new active event 🎈', 'Create a new event ✈'],
-        ['Look at my events 👀', 'Look at my spending history 😒'],
+        ['Look at my events 👀', 'Look at last 20 transactions 😒'],
       ]).resize(),
     );
   }
@@ -68,16 +68,42 @@ export class WebhookService {
     ctx.reply('WIP!');
   }
 
-  @Hears('Look at my spending history 😒')
+  @Hears('Look at last 20 transactions 😒')
   async lookAtSpendingHistory(ctx: Context) {
-    ctx.reply('WIP!');
+    const telegram_id = ctx.message.from.username;
+    const transactions: Transaction[] =
+      await this.transactionService.retrieveAllTransactions(telegram_id);
+    if (transactions.length == 0) {
+      ctx.reply('You have not added any transactions!');
+      return;
+    }
+    let reply = `<b>Last 20 transactions 💵:</b>\n`;
+    for (let i = 0; i < transactions.length && i < 20; i++) {
+      const transaction = transactions[i];
+      const event = await this.eventsService.getEventWithId(
+        transaction.event_id,
+      );
+      const time = moment.unix(transaction.created_at).format('DD/MM/YY HH:mm');
+      reply += `${i + 1}: <b>${event.event_name}</b>, ${
+        transaction.description
+      }, $${transaction.cost} at ${time} \n`;
+    }
+    ctx.replyWithHTML(reply);
   }
 
+  /**
+   * Creates a new event for the user to add transactions to
+   * @param ctx
+   */
   @Hears('Create a new event ✈')
   async createEvent(ctx: Scenes.SceneContext) {
     ctx.scene.enter('create-event');
   }
 
+  /**
+   * Views the transactions in the current active event
+   * @param ctx
+   */
   @Hears('View current event 💵')
   async viewCurrentEvent(ctx: Context) {
     const telegram_id = ctx.message.from.username;
