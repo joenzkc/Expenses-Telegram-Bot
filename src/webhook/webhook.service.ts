@@ -50,6 +50,7 @@ export class WebhookService {
         ['View current event 💵', 'Add a transaction 🍟'],
         ['Set a new active event 🎈', 'Create a new event ✈'],
         ['Look at my events 👀', 'Look at last 20 transactions 😒'],
+        ['Remove an event ❌', 'Unremove an event ✅'],
       ]).resize(),
     );
   }
@@ -157,10 +158,10 @@ export class WebhookService {
         reply += `${i + 1}: ${transactions[i].description}, $${
           transactions[i].cost
         } at ${time}\n`;
-        console.log(`Transaction ${i} cost: ${transactions[i].cost}`);
+        // console.log(`Transaction ${i} cost: ${transactions[i].cost}`);
         totalSpent += +transactions[i].cost;
       }
-      console.log(totalSpent);
+      //   console.log(totalSpent);
       const remaining = event.budget - totalSpent;
       if (remaining < 0) {
         reply += `Remaining: You have exceeded your budget by  😒\n`;
@@ -171,4 +172,12 @@ export class WebhookService {
       ctx.replyWithHTML(reply);
     }
   }
+
+  @Hears('Remove an event ❌')
+  async removeEvent(ctx: Scenes.SceneContext) {
+    ctx.scene.enter('remove-event');
+  }
+
+  @Hears('Unremove an event ✅')
+  async unremoveEvent(ctx: Scenes.SceneContext) {}
 }

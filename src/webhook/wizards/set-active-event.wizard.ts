@@ -40,11 +40,19 @@ export class SetActiveEventWizard {
       let reply = '*New active event set\\!* \n\n';
       reply += '*Event Details:*\n';
       reply += `Event name: ${event_name} \n`;
-      console.log(event.budget);
+      // console.log(event.budget);
       const budget = Math.round(event.budget);
       reply += `Budget: ${budget}`;
-      ctx.replyWithMarkdownV2(reply);
-      console.log(event_name);
+      ctx.replyWithMarkdownV2(
+        reply,
+        Markup.keyboard([
+          ['View current event 💵', 'Add a transaction 🍟'],
+          ['Set a new active event 🎈', 'Create a new event ✈'],
+          ['Look at my events 👀', 'Look at last 20 transactions 😒'],
+          ['Remove an event ❌', 'Unremove an event ✅'],
+        ]),
+      );
+      // console.log(event_name);
       ctx.scene.leave();
     }
   }

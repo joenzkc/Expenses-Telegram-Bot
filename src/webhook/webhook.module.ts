@@ -11,6 +11,7 @@ import { CreateEventWizard } from './wizards/create-event.wizard';
 import { SetActiveEventWizard } from './wizards/set-active-event.wizard';
 import { TransactionModule } from 'src/transaction/transaction.module';
 import { AddTransactionWizard } from './wizards/add-transaction.wizard';
+import { RemoveEventWizard } from './wizards/remove-event.wizard';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { AddTransactionWizard } from './wizards/add-transaction.wizard';
     CreateEventWizard,
     SetActiveEventWizard,
     AddTransactionWizard,
+    RemoveEventWizard,
   ],
 })
 export class WebhookModule {}

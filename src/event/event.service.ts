@@ -33,6 +33,24 @@ export class EventService {
     }
   }
 
+  async deactivateEvent(event_id: number) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const event: Event = await queryRunner.manager.findOne(Event, {
+        where: { id: event_id },
+      });
+      event.is_active = false;
+      await queryRunner.manager.save(event);
+    } catch (err) {
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
   async getActiveEvents(telegram_id: string) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
