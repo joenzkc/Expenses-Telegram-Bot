@@ -10,6 +10,7 @@ import { UsersService } from 'src/users/users.service';
 import { Context, Telegraf, Markup, Scenes } from 'telegraf';
 import * as moment from 'moment';
 import { Event } from 'src/event/event.entity';
+import buttons from 'src/common/buttons';
 
 @Injectable()
 @Update()
@@ -46,12 +47,7 @@ export class WebhookService {
 
     await ctx.reply(
       `Welcome back ${name}! What would you like to do today?`,
-      Markup.keyboard([
-        ['View current event 💵', 'Add a transaction 🍟'],
-        ['Set a new active event 🎈', 'Create a new event ✈'],
-        ['Look at my events 👀', 'Look at last 20 transactions 😒'],
-        ['Remove an event ❌', 'Unremove an event ✅'],
-      ]).resize(),
+      Markup.keyboard(buttons).resize(),
     );
   }
 
@@ -178,6 +174,8 @@ export class WebhookService {
     ctx.scene.enter('remove-event');
   }
 
-  @Hears('Unremove an event ✅')
-  async unremoveEvent(ctx: Scenes.SceneContext) {}
+  @Hears('Edit a transaction ✏')
+  async editTransaction(ctx: Scenes.SceneContext) {
+    ctx.scene.enter('edit-transaction');
+  }
 }

@@ -1,4 +1,5 @@
 import { Context, On, Wizard, WizardStep } from 'nestjs-telegraf';
+import buttons from 'src/common/buttons';
 import { CreateEventDto } from 'src/event/dto/create-event.dto';
 import { EventService } from 'src/event/event.service';
 import { Markup, Scenes } from 'telegraf';
@@ -45,12 +46,7 @@ export class CreateEventWizard {
         await this.eventService.createEvent(eventDto);
         ctx.reply(
           'Your event has been created!',
-          Markup.keyboard([
-            ['View current event 💵', 'Add a transaction 🍟'],
-            ['Set a new active event 🎈', 'Create a new event ✈'],
-            ['Look at my events 👀', 'Look at last 20 transactions 😒'],
-            ['Remove an event ❌', 'Unremove an event ✅'],
-          ]).resize(),
+          Markup.keyboard(buttons).resize(),
         );
       } catch (err) {
         ctx.reply(

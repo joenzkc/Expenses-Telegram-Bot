@@ -1,4 +1,5 @@
 import { Action, Context, On, Wizard, WizardStep } from 'nestjs-telegraf';
+import buttons from 'src/common/buttons';
 import { CreateEventDto } from 'src/event/dto/create-event.dto';
 import { Event } from 'src/event/event.entity';
 import { EventService } from 'src/event/event.service';
@@ -82,26 +83,13 @@ export class RemoveEventWizard {
     const chosen = ctx.wizard.state['chosen'];
     const event = ctx.wizard.state[chosen];
     if (choice == 1) {
-      await this.eventService.deactivateEvent(event.event_id);
-      ctx.reply(
-        'Event has been removed!',
-        Markup.keyboard([
-          ['View current event 💵', 'Add a transaction 🍟'],
-          ['Set a new active event 🎈', 'Create a new event ✈'],
-          ['Look at my events 👀', 'Look at last 20 transactions 😒'],
-          ['Remove an event ❌', 'Unremove an event ✅'],
-        ]).resize(),
-      );
+      await this.eventService.deactivateEvent(event.id);
+      ctx.reply('Event has been removed!', Markup.keyboard(buttons).resize());
       ctx.scene.leave();
     } else {
       ctx.reply(
         'Event has not been removed.',
-        Markup.keyboard([
-          ['View current event 💵', 'Add a transaction 🍟'],
-          ['Set a new active event 🎈', 'Create a new event ✈'],
-          ['Look at my events 👀', 'Look at last 20 transactions 😒'],
-          ['Remove an event ❌', 'Unremove an event ✅'],
-        ]).resize(),
+        Markup.keyboard(buttons).resize(),
       );
       ctx.scene.leave();
     }

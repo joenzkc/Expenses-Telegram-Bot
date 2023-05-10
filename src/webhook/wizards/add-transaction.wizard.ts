@@ -6,6 +6,7 @@ import { TransactionService } from 'src/transaction/transaction.service';
 import { UsersService } from 'src/users/users.service';
 import { Markup, Scenes } from 'telegraf';
 import * as moment from 'moment';
+import buttons from 'src/common/buttons';
 
 @Wizard('add-transaction')
 export class AddTransactionWizard {
@@ -78,12 +79,7 @@ export class AddTransactionWizard {
       await this.transactionService.createTransaction(transactionDto);
       await ctx.reply(
         'Transaction created!',
-        Markup.keyboard([
-          ['View current event 💵', 'Add a transaction 🍟'],
-          ['Set a new active event 🎈', 'Create a new event ✈'],
-          ['Look at my events 👀', 'Look at last 20 transactions 😒'],
-          ['Remove an event ❌', 'Unremove an event ✅'],
-        ]).resize(),
+        Markup.keyboard(buttons).resize(),
       );
       const telegram_id = ctx.message.from.username;
       const activeId = await this.userService.getActiveEventId(telegram_id);

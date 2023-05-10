@@ -1,4 +1,5 @@
 import { Context, On, Wizard, WizardStep } from 'nestjs-telegraf';
+import buttons from 'src/common/buttons';
 import { CreateEventDto } from 'src/event/dto/create-event.dto';
 import { Event } from 'src/event/event.entity';
 import { EventService } from 'src/event/event.service';
@@ -43,15 +44,7 @@ export class SetActiveEventWizard {
       // console.log(event.budget);
       const budget = Math.round(event.budget);
       reply += `Budget: ${budget}`;
-      ctx.replyWithMarkdownV2(
-        reply,
-        Markup.keyboard([
-          ['View current event 💵', 'Add a transaction 🍟'],
-          ['Set a new active event 🎈', 'Create a new event ✈'],
-          ['Look at my events 👀', 'Look at last 20 transactions 😒'],
-          ['Remove an event ❌', 'Unremove an event ✅'],
-        ]),
-      );
+      ctx.replyWithMarkdownV2(reply, Markup.keyboard(buttons));
       // console.log(event_name);
       ctx.scene.leave();
     }

@@ -43,6 +43,7 @@ export class EventService {
       });
       event.is_active = false;
       await queryRunner.manager.save(event);
+      await queryRunner.commitTransaction();
     } catch (err) {
       console.log(err);
       await queryRunner.rollbackTransaction();
