@@ -15,7 +15,7 @@ export class SetActiveEventWizard {
   async step1(@Context() ctx: Scenes.WizardContext) {
     if (ctx.message && 'text' in ctx.message) {
       const telegram_id = ctx.message.from.username;
-      const activeEvents: Event[] = await this.eventService.getEvents(
+      const activeEvents: Event[] = await this.eventService.getActiveEvents(
         telegram_id,
       );
       let reply = '*Select an event from your current events* 👀\n';

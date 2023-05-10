@@ -1,9 +1,11 @@
 import { Context, Wizard, WizardStep } from 'nestjs-telegraf';
 import { EventService } from 'src/event/event.service';
 import { CreateTransactionDto } from 'src/transaction/dto/create-transaction.dto';
+import { Transaction } from 'src/transaction/transaction.entity';
 import { TransactionService } from 'src/transaction/transaction.service';
 import { UsersService } from 'src/users/users.service';
-import { Scenes } from 'telegraf';
+import { Markup, Scenes } from 'telegraf';
+import * as moment from 'moment';
 
 @Wizard('add-transaction')
 export class AddTransactionWizard {
@@ -74,8 +76,50 @@ export class AddTransactionWizard {
       };
 
       await this.transactionService.createTransaction(transactionDto);
-      await ctx.reply('Transaction created!');
-      await ctx.scene.leave();
+      await ctx.reply(
+        'Transaction created!',
+        Markup.keyboard([
+          ['View current event 💵', 'Add a transaction 🍟'],
+          ['Set a new active event 🎈', 'Create a new event ✈'],
+          ['Look at my events 👀', 'Look at last 20 transactions 😒'],
+        ]).resize(),
+      );
+      const telegram_id = ctx.message.from.username;
+      const activeId = await this.userService.getActiveEventId(telegram_id);
+      if (!activeId) {
+        ctx.reply('No active event!');
+      } else {
+        const event = await this.eventService.getEventWithId(activeId);
+        let reply = `<b>Current active event: ${event.event_name}</b>\n`;
+        reply += `Total budget: $${Math.round(event.budget)}\n`;
+        const transactions: Transaction[] =
+          await this.transactionService.retrieveTransactionsEventId(event.id);
+        reply += `Transaction log: \n`;
+        if (transactions.length == 0) {
+          reply += `No transactions recorded!\n`;
+        }
+        let totalSpent: number = 0;
+        for (let i = 0; i < transactions.length; i++) {
+          const date = transactions[i].created_at;
+          // Hours part from the timestamp
+          const time = moment.unix(date).format('DD/MM/YY HH:mm').toString();
+          reply += `${i + 1}: ${transactions[i].description}, $${
+            transactions[i].cost
+          } at ${time}\n`;
+          console.log(`Transaction ${i} cost: ${transactions[i].cost}`);
+          totalSpent += +transactions[i].cost;
+        }
+        console.log(totalSpent);
+        const remaining = event.budget - totalSpent;
+        if (remaining < 0) {
+          reply += `Remaining: You have exceeded your budget by  😒\n`;
+        } else {
+          reply += `Remaining: $${remaining}`;
+        }
+
+        ctx.replyWithHTML(reply);
+        await ctx.scene.leave();
+      }
     }
   }
 }

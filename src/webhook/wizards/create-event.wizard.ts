@@ -1,7 +1,7 @@
 import { Context, On, Wizard, WizardStep } from 'nestjs-telegraf';
 import { CreateEventDto } from 'src/event/dto/create-event.dto';
 import { EventService } from 'src/event/event.service';
-import { Scenes } from 'telegraf';
+import { Markup, Scenes } from 'telegraf';
 
 @Wizard('create-event')
 export class CreateEventWizard {
@@ -43,7 +43,14 @@ export class CreateEventWizard {
       };
       try {
         await this.eventService.createEvent(eventDto);
-        ctx.reply('Your event has been created!');
+        ctx.reply(
+          'Your event has been created!',
+          Markup.keyboard([
+            ['View current event 💵', 'Add a transaction 🍟'],
+            ['Set a new active event 🎈', 'Create a new event ✈'],
+            ['Look at my events 👀', 'Look at last 20 transactions 😒'],
+          ]).resize(),
+        );
       } catch (err) {
         ctx.reply(
           'Something went wrong! Did you have a event with the same name?',

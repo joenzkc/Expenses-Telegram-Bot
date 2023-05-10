@@ -9,6 +9,7 @@ import { CreateUserDto } from 'src/users/dto/create-user-dto';
 import { UsersService } from 'src/users/users.service';
 import { Context, Telegraf, Markup, Scenes } from 'telegraf';
 import * as moment from 'moment';
+import { Event } from 'src/event/event.entity';
 
 @Injectable()
 @Update()
@@ -53,11 +54,19 @@ export class WebhookService {
     );
   }
 
+  /**
+   * Sets a new active event, which transactions will be added to
+   * @param ctx
+   */
   @Hears('Set a new active event 🎈')
   async setActiveEvent(ctx: Scenes.SceneContext) {
     ctx.scene.enter('set-active-event');
   }
 
+  /**
+   * Adds a transaction to the current active event
+   * @param ctx
+   */
   @Hears('Add a transaction 🍟')
   async addTransaction(ctx: Scenes.SceneContext) {
     ctx.scene.enter('add-transaction');
@@ -65,9 +74,28 @@ export class WebhookService {
 
   @Hears('Look at my events 👀')
   async lookAtEvents(ctx: Context) {
-    ctx.reply('WIP!');
+    const telegram_id = ctx.message.from.username;
+    const events: Event[] = await this.eventsService.getActiveEvents(
+      telegram_id,
+    );
+    if (events.length == 0) {
+      ctx.reply('You have no events!');
+      return;
+    }
+    let reply = `<b>Active Events</b> 📅:\n`;
+    for (let i = 0; i < events.length; i++) {
+      const event = events[i];
+      reply += `${i + 1}: <b>${event.event_name}</b>, Budget: $${
+        event.budget
+      }\n`;
+    }
+    ctx.replyWithHTML(reply);
   }
 
+  /**
+   * Looks at the last 20 transactions
+   * @param ctx
+   */
   @Hears('Look at last 20 transactions 😒')
   async lookAtSpendingHistory(ctx: Context) {
     const telegram_id = ctx.message.from.username;
@@ -97,7 +125,8 @@ export class WebhookService {
    */
   @Hears('Create a new event ✈')
   async createEvent(ctx: Scenes.SceneContext) {
-    ctx.scene.enter('create-event');
+    await ctx.scene.enter('create-event');
+    await this.viewCurrentEvent(ctx);
   }
 
   /**
@@ -124,7 +153,7 @@ export class WebhookService {
       for (let i = 0; i < transactions.length; i++) {
         const date = transactions[i].created_at;
         // Hours part from the timestamp
-        const time = moment.unix(date).format('DD/MM/YY HH:mm').toString();
+        const time = moment.unix(date).format('DD/MM/YY HH:mm a').toString();
         reply += `${i + 1}: ${transactions[i].description}, $${
           transactions[i].cost
         } at ${time}\n`;
