@@ -21,7 +21,6 @@ export class LogService {
     await queryRunner.startTransaction();
     try {
       const log: Log = await this.logRepository.create(dto);
-      console.log(dto.telegram_id);
       const prev_id = (
         await queryRunner.manager.find(Log, {
           where: { telegram_id: dto.telegram_id },

@@ -123,7 +123,6 @@ export class WebhookService {
   @Hears('Create a new event ✈')
   async createEvent(ctx: Scenes.SceneContext) {
     await ctx.scene.enter('create-event');
-    await this.viewCurrentEvent(ctx);
   }
 
   /**

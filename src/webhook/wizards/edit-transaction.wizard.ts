@@ -69,7 +69,6 @@ export class EditTransactionWizard {
   async step2(@Context() ctx: Scenes.WizardContext) {
     const chosen = ctx.wizard.state['chosen'];
     const transaction = ctx.wizard.state[chosen];
-    console.log(transaction);
     const time = moment
       .unix(transaction.created_at)
       .format('DD-MM-YYYY HH:mm a');
@@ -135,7 +134,6 @@ export class EditTransactionWizard {
       const time = moment
         .unix(transaction.created_at)
         .format('DD-MM-YYYY HH:mm a');
-      console.log(transactionObject);
       reply += `Your transaction has been updated!\n`;
       reply += `<b>Description:</b> ${transactionObject.description}\n`;
       reply += `<b>Cost:</b> ${transactionObject.cost}\n`;
@@ -144,50 +142,4 @@ export class EditTransactionWizard {
       ctx.scene.leave();
     }
   }
-
-  // @WizardStep(2)
-  // async step2(@Context() ctx: Scenes.WizardContext) {
-  //   const chosen = ctx.wizard.state['chosen'];
-  //   const event = ctx.wizard.state[chosen];
-  //   let reply = `Your chosen event:\n\n`;
-  //   reply += `<b>Event name: ${event.event_name}</b>\n`;
-  //   reply += `Budget: ${event.budget}\n\n`;
-  //   reply += `Confirm deletion?`;
-  //   ctx.replyWithHTML(reply, {
-  //     reply_markup: {
-  //       inline_keyboard: [
-  //         [
-  //           { text: 'Yes', callback_data: `yes` },
-  //           { text: 'No', callback_data: `no` },
-  //         ],
-  //       ],
-  //     },
-  //   });
-  // }
-
-  // @Action(/^(yes|no)$/)
-  // async confirm(ctx: any) {
-  //   const choice = ctx.callbackQuery.data;
-  //   ctx.wizard.state['choice'] = choice == 'yes' ? 1 : 0;
-  //   ctx.wizard.next();
-  //   ctx.wizard.steps[ctx.wizard.cursor](ctx);
-  // }
-
-  // @WizardStep(3)
-  // async step3(ctx: Scenes.WizardContext) {
-  //   const choice = ctx.wizard.state['choice'];
-  //   const chosen = ctx.wizard.state['chosen'];
-  //   const event = ctx.wizard.state[chosen];
-  //   if (choice == 1) {
-  //     await this.eventService.deactivateEvent(event.event_id);
-  //     ctx.reply('Event has been removed!', Markup.keyboard(buttons).resize());
-  //     ctx.scene.leave();
-  //   } else {
-  //     ctx.reply(
-  //       'Event has not been removed.',
-  //       Markup.keyboard(buttons).resize(),
-  //     );
-  //     ctx.scene.leave();
-  //   }
-  // }
 }

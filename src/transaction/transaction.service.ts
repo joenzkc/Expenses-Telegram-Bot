@@ -51,6 +51,7 @@ export class TransactionService {
     try {
       const xacts: Transaction[] = await queryRunner.manager.find(Transaction, {
         where: { event_id },
+        order: { created_at: 'desc' },
       });
       return xacts;
     } catch (err) {

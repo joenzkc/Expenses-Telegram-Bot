@@ -103,10 +103,8 @@ export class AddTransactionWizard {
           reply += `${i + 1}: ${transactions[i].description}, $${
             transactions[i].cost
           } at ${time}\n`;
-          console.log(`Transaction ${i} cost: ${transactions[i].cost}`);
           totalSpent += +transactions[i].cost;
         }
-        console.log(totalSpent);
         const remaining = event.budget - totalSpent;
         if (remaining < 0) {
           reply += `Remaining: You have exceeded your budget by  😒\n`;
