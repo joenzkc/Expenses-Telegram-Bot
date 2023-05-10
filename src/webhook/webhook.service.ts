@@ -40,8 +40,10 @@ export class WebhookService {
         type: 'CREATE_USER',
         time,
       };
-      await this.logService.createLog(log);
-      await ctx.reply('User profile created successfully!');
+      await ctx.reply(
+        'User profile created successfully!',
+        Markup.keyboard(buttons).resize(),
+      );
       return;
     }
 
