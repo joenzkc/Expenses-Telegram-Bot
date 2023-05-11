@@ -161,7 +161,8 @@ export class WebhookService {
       //   console.log(totalSpent);
       const remaining = event.budget - totalSpent;
       if (remaining < 0) {
-        reply += `Remaining: You have exceeded your budget by  😒\n`;
+        const negated = Math.abs(remaining);
+        reply += `Remaining: You have exceeded your budget by $${negated}😒\n`;
       } else {
         reply += `Remaining: $${remaining}`;
       }
